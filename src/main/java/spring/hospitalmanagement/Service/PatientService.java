@@ -29,6 +29,7 @@ public class PatientService {
     private final AppointmentRepository appointmentRepository;
     private final PasswordEncoder passwordEncoder;
     private final PatientMapper patientMapper;
+    private final EmailService emailService;
 
     @Transactional
     public UserResponseDTO register(UserRequestDTO request) {
@@ -58,6 +59,7 @@ public class PatientService {
         patient.setEmergencyContactName(request.getEmergencyContactName());
         patient.setEmergencyContactPhone(request.getEmergencyContactPhone());
         patientRepository.save(patient);
+        emailService.sendWelcomeEmail(user.getEmail(), user.getFullName());
 
         return patientMapper.toResponse(patient);
     }
@@ -123,7 +125,6 @@ public class PatientService {
         userRepository.delete(patient.getUser());
     }
 
-    // Admin only
     public List<UserResponseDTO> getAllPatients() {
         return patientRepository.findAll()
                 .stream()

@@ -37,6 +37,7 @@ public class DoctorService {
     private final AppointmentRepository appointmentRepository;
     private final PasswordEncoder passwordEncoder;
     private final DoctorMapper doctorMapper;
+    private final EmailService emailService;
 
     @Transactional
     public UserResponseDTO createDoctor(UserRequestDTO request, Long hospitalId) {
@@ -56,7 +57,7 @@ public class DoctorService {
         Hospital hospital = hospitalRepository.findById(hospitalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Hospital not found"));
 
-        // Fetch and validate services
+
         List<HospitalService> services = List.of();
         if (request.getServiceIds() != null && !request.getServiceIds().isEmpty()) {
             services = serviceRepository.findAllById(request.getServiceIds());
@@ -82,6 +83,7 @@ public class DoctorService {
         doctor.setStatus(DoctorStatus.ACTIVE);
         doctor.setServices(services);
         doctorRepository.save(doctor);
+        emailService.sendDoctorCreatedEmail(user.getEmail(), user.getFullName(), request.getPassword());
 
         return doctorMapper.toResponse(doctor);
     }
@@ -100,7 +102,7 @@ public class DoctorService {
             doctor.setSpecialisation(request.getSpecialisation());
         }
 
-        // Update services if provided
+
         if (request.getServiceIds() != null && !request.getServiceIds().isEmpty()) {
             List<HospitalService> services = serviceRepository.findAllById(request.getServiceIds());
             if (services.size() != request.getServiceIds().size()) {

@@ -21,31 +21,34 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
-                        .requestMatchers("/api/hospitals/register").permitAll()
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/api/patients/register").permitAll()
-                        // Admin only
+                        .requestMatchers(
+                                "/api/hospitals/register",
+                                "/api/auth/login",
+                                "/api/patients/register",
+                                "/swagger-ui/**",
+                                "/api-docs/**",
+                                "/swagger-ui.html",
+                                "/login/oauth2/**",
+                                "/oauth2/**",
+                                "/login"
+                        ).permitAll()
                         .requestMatchers("/api/doctors/**").hasRole("ADMIN")
                         .requestMatchers("/api/services/**").hasRole("ADMIN")
                         .requestMatchers("/api/reports/**").hasRole("ADMIN")
-                        // Admin and Doctor
                         .requestMatchers("/api/diagnoses/**").hasAnyRole("ADMIN", "DOCTOR")
-                        .requestMatchers(
-                                "/swagger-ui/**",
-                                "/api-docs/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
-                        // Authenticated users
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuth2SuccessHandler)
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
