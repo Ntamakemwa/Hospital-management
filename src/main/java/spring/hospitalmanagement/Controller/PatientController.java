@@ -30,14 +30,14 @@ public class PatientController {
     }
 
     @GetMapping("/profile")
-    @PreAuthorize("hasRole('PATIENT')")
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
     public ResponseEntity<UserResponseDTO> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
         Long userId = getUserId(userDetails);
         return ResponseEntity.ok(patientService.getProfile(userId));
     }
 
     @PutMapping("/profile")
-    @PreAuthorize("hasRole('PATIENT')")
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
     public ResponseEntity<UserResponseDTO> updateProfile(@AuthenticationPrincipal UserDetails userDetails,
                                                          @Valid @RequestBody UserRequestDTO request) {
         Long userId = getUserId(userDetails);
@@ -45,7 +45,7 @@ public class PatientController {
     }
 
     @PatchMapping("/profile")
-    @PreAuthorize("hasRole('PATIENT')")
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
     public ResponseEntity<UserResponseDTO> patchProfile(@AuthenticationPrincipal UserDetails userDetails,
                                                         @RequestBody UserRequestDTO request) {
         Long userId = getUserId(userDetails);
@@ -53,16 +53,15 @@ public class PatientController {
     }
 
     @DeleteMapping("/profile")
-    @PreAuthorize("hasRole('PATIENT')")
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
     public ResponseEntity<Void> deleteAccount(@AuthenticationPrincipal UserDetails userDetails) {
         Long userId = getUserId(userDetails);
         patientService.deleteAccount(userId);
         return ResponseEntity.noContent().build();
     }
 
-    // Admin only
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<UserResponseDTO>> getAllPatients() {
         return ResponseEntity.ok(patientService.getAllPatients());
     }

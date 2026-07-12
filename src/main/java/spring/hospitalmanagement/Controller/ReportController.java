@@ -10,12 +10,12 @@ import spring.hospitalmanagement.Service.ReportService;
 @RestController
 @RequestMapping("/api/reports")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 public class ReportController {
 
     private final ReportService reportService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ReportResponseDTO> getReport() {
         return ResponseEntity.ok(reportService.generateReport());
     }

@@ -39,6 +39,5 @@ public class UserRequestDTO {
 
     private String specialisation;
 
-    // Doctor services
     private List<Long> serviceIds;
 }

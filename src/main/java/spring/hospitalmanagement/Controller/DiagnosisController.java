@@ -26,7 +26,7 @@ public class DiagnosisController {
     private final UserRepository userRepository;
 
     @PostMapping(consumes = "multipart/form-data")
-    @PreAuthorize("hasRole('DOCTOR')")
+    @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
     public ResponseEntity<DiagnosisResponseDTO> createDiagnosis(
             @Valid @RequestPart("data") DiagnosisRequestDTO request,
             @RequestPart(value = "file", required = false) MultipartFile file,
@@ -37,7 +37,7 @@ public class DiagnosisController {
     }
 
     @PutMapping("/{diagnosisId}")
-    @PreAuthorize("hasRole('DOCTOR')")
+    @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
     public ResponseEntity<DiagnosisResponseDTO> updateDiagnosis(
             @PathVariable Long diagnosisId,
             @Valid @RequestBody DiagnosisRequestDTO request,
@@ -47,7 +47,7 @@ public class DiagnosisController {
     }
 
     @GetMapping("/appointment/{appointmentId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DOCTOR')")
     public ResponseEntity<DiagnosisResponseDTO> getDiagnosis(@PathVariable Long appointmentId) {
         return ResponseEntity.ok(diagnosisService.getDiagnosis(appointmentId));
     }

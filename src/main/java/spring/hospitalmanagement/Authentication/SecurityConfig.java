@@ -28,7 +28,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .sessionFixation().none()
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/hospitals/register",
@@ -41,10 +43,6 @@ public class SecurityConfig {
                                 "/oauth2/**",
                                 "/login"
                         ).permitAll()
-                        .requestMatchers("/api/doctors/**").hasRole("ADMIN")
-                        .requestMatchers("/api/services/**").hasRole("ADMIN")
-                        .requestMatchers("/api/reports/**").hasRole("ADMIN")
-                        .requestMatchers("/api/diagnoses/**").hasAnyRole("ADMIN", "DOCTOR")
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2

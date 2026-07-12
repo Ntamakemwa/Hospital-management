@@ -25,7 +25,7 @@ public class AppointmentController {
     private final UserRepository userRepository;
 
     @PostMapping
-    @PreAuthorize("hasRole('PATIENT')")
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
     public ResponseEntity<AppointmentResponseDTO> bookAppointment(
             @Valid @RequestBody AppointmentRequestDTO request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -34,19 +34,19 @@ public class AppointmentController {
     }
 
     @PatchMapping("/{id}/approve")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<AppointmentResponseDTO> approve(@PathVariable Long id) {
         return ResponseEntity.ok(appointmentService.approveAppointment(id));
     }
 
     @PatchMapping("/{id}/reject")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<AppointmentResponseDTO> reject(@PathVariable Long id) {
         return ResponseEntity.ok(appointmentService.rejectAppointment(id));
     }
 
     @PatchMapping("/{id}/cancel")
-    @PreAuthorize("hasRole('PATIENT')")
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
     public ResponseEntity<AppointmentResponseDTO> cancel(@PathVariable Long id,
                                                          @AuthenticationPrincipal UserDetails userDetails) {
         Long userId = getUserId(userDetails);
@@ -54,20 +54,20 @@ public class AppointmentController {
     }
 
     @PatchMapping("/{id}/complete")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<AppointmentResponseDTO> complete(@PathVariable Long id) {
         return ResponseEntity.ok(appointmentService.completeAppointment(id));
     }
 
     @PatchMapping("/{id}/reassign/{doctorId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<AppointmentResponseDTO> reassign(@PathVariable Long id,
                                                            @PathVariable Long doctorId) {
         return ResponseEntity.ok(appointmentService.reassignAppointment(id, doctorId));
     }
 
     @GetMapping("/my")
-    @PreAuthorize("hasRole('PATIENT')")
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
     public ResponseEntity<List<AppointmentResponseDTO>> myAppointments(
             @AuthenticationPrincipal UserDetails userDetails) {
         Long userId = getUserId(userDetails);
@@ -75,7 +75,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/doctor")
-    @PreAuthorize("hasRole('DOCTOR')")
+    @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
     public ResponseEntity<List<AppointmentResponseDTO>> doctorAppointments(
             @AuthenticationPrincipal UserDetails userDetails) {
         Long userId = getUserId(userDetails);
@@ -83,7 +83,7 @@ public class AppointmentController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<AppointmentResponseDTO>> allAppointments() {
         return ResponseEntity.ok(appointmentService.getAllAppointments());
     }
